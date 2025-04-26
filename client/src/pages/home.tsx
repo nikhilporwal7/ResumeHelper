@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useResumeContext } from "@/context/ResumeContext";
 import MsLogo from "@/components/ui/ms-logo";
-import { CheckCircle, Layout, Download, FileText, ArrowRight } from "lucide-react";
+import { CheckCircle, Layout, Download, FileText, ArrowRight, Database, Cloud } from "lucide-react";
 
 export default function Home() {
   const { createNewResume } = useResumeContext();
@@ -244,6 +244,57 @@ export default function Home() {
               </Link>
             </CardFooter>
           </Card>
+        </div>
+      </section>
+
+      {/* Arweave Section */}
+      <section className="py-12 mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="md:w-1/2">
+              <div className="rounded-full bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 flex items-center justify-center mb-6">
+                <Database className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">Decentralized Resume Storage</h2>
+              <p className="text-lg text-gray-700 mb-6">
+                Store your resumes permanently on the Arweave blockchain. Access your resumes from anywhere, anytime, without depending on centralized servers.
+              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span className="text-gray-700">Permanent, immutable storage</span>
+              </div>
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span className="text-gray-700">Secure blockchain technology</span>
+              </div>
+              <div className="flex items-center gap-2 mb-6">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span className="text-gray-700">Share with a simple link</span>
+              </div>
+              <Link href="/arweave">
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 px-6 py-3 rounded-md">
+                  Explore Arweave Storage
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+            <div className="md:w-1/2 mt-8 md:mt-0">
+              <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <Cloud className="h-5 w-5 text-blue-500" />
+                  <h3 className="text-lg font-bold text-gray-800">Your Resume on Arweave</h3>
+                </div>
+                <div className="w-full h-1 bg-gradient-to-r from-blue-300 to-purple-300 rounded-full mb-6"></div>
+                <p className="text-gray-600 mb-4">Arweave Process ID:</p>
+                <code className="block bg-gray-50 p-3 rounded border border-gray-200 text-sm font-mono text-gray-800 mb-6 break-all">
+                  FpZIj5iTHxKybufO6nc3Ab_DKPMgfJbVVs_oiazD4Fc
+                </code>
+                <p className="text-sm text-gray-600 italic">
+                  Your resumes are stored with this process ID, ensuring you can always access them through the Arweave network.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

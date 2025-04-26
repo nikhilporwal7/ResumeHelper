@@ -68,25 +68,28 @@ export default function Header() {
             <nav className="ml-8">
               <ul className="flex space-x-8">
                 <li>
-                  <Link href="/">
-                    <a className={`text-gray-700 hover:text-primary ${location === '/' ? 'text-primary font-medium' : ''}`}>
-                      Home
-                    </a>
+                  <Link 
+                    href="/" 
+                    className={`text-gray-700 hover:text-primary ${location === '/' ? 'text-primary font-medium' : ''}`}
+                  >
+                    Home
                   </Link>
                 </li>
                 <li>
-                  <Link href="/builder">
-                    <a className={`text-gray-700 hover:text-primary ${location.startsWith('/builder') ? 'text-primary font-medium' : ''}`}>
-                      Create Resume
-                    </a>
+                  <Link 
+                    href="/builder" 
+                    className={`text-gray-700 hover:text-primary ${location.startsWith('/builder') ? 'text-primary font-medium' : ''}`}
+                  >
+                    Create Resume
                   </Link>
                 </li>
                 <li>
-                  <Link href="/arweave">
-                    <a className={`text-gray-700 hover:text-primary flex items-center ${location === '/arweave' ? 'text-primary font-medium' : ''}`}>
-                      <Database className="h-4 w-4 mr-1" />
-                      Arweave Storage
-                    </a>
+                  <Link 
+                    href="/arweave" 
+                    className={`text-gray-700 hover:text-primary flex items-center ${location === '/arweave' ? 'text-primary font-medium' : ''}`}
+                  >
+                    <Database className="h-4 w-4 mr-1" />
+                    Arweave Storage
                   </Link>
                 </li>
               </ul>
