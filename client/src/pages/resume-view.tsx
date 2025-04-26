@@ -4,9 +4,10 @@ import { useResumeContext } from "@/context/ResumeContext";
 import { ResumePreview } from "@/components/ResumePreview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, Edit, Share2, Copy } from "lucide-react";
+import { Download, Edit, Share2, Copy, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { generatePDF } from "@/lib/pdf-generator";
+import { ArweaveStorageButton, ArweaveRetrieveForm } from "@/components/ArweaveStorage";
 
 export default function ResumeView() {
   const { id } = useParams<{ id: string }>();
@@ -179,6 +180,7 @@ export default function ResumeView() {
               <Download className="h-4 w-4 mr-2" />
               Download PDF
             </Button>
+            <ArweaveStorageButton />
           </div>
         </div>
       </div>
@@ -188,14 +190,20 @@ export default function ResumeView() {
         onDownload={handleDownload}
       />
 
-      <div className="mt-8 text-center">
-        <p className="text-gray-600 mb-4">Want to create your own professional resume?</p>
-        <Button
-          className="bg-primary hover:bg-primary/90 text-white"
-          onClick={() => navigate("/builder")}
-        >
-          Create Your Resume
-        </Button>
+      <div className="mt-8 grid md:grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Retrieve from Arweave</h2>
+          <ArweaveRetrieveForm />
+        </div>
+        <div className="text-center flex flex-col justify-center">
+          <p className="text-gray-600 mb-4">Want to create your own professional resume?</p>
+          <Button
+            className="bg-primary hover:bg-primary/90 text-white"
+            onClick={() => navigate("/builder")}
+          >
+            Create Your Resume
+          </Button>
+        </div>
       </div>
     </div>
   );

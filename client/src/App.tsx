@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ResumeBuilder from "@/pages/resume-builder";
 import ResumeView from "@/pages/resume-view";
+import ArweaveResumes from "@/pages/arweave-resumes";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
@@ -23,6 +24,7 @@ function Router() {
           <Route path="/builder" component={ResumeBuilder} />
           <Route path="/builder/:id" component={ResumeBuilder} />
           <Route path="/view/:id" component={ResumeView} />
+          <Route path="/arweave" component={ArweaveResumes} />
           <Route component={NotFound} />
         </Switch>
       </div>

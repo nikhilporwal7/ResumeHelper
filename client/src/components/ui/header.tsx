@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import MsLogo from "./ms-logo";
 import { Button } from "@/components/ui/button";
-import { Save, Download } from "lucide-react";
+import { Save, Download, Database } from "lucide-react";
 import { useResumeContext } from "@/context/ResumeContext";
 import { apiRequest } from "@/lib/queryClient";
 import { generatePDF } from "@/lib/pdf-generator";
@@ -65,6 +65,32 @@ export default function Header() {
                 </div>
               </div>
             </Link>
+            <nav className="ml-8">
+              <ul className="flex space-x-8">
+                <li>
+                  <Link href="/">
+                    <a className={`text-gray-700 hover:text-primary ${location === '/' ? 'text-primary font-medium' : ''}`}>
+                      Home
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/builder">
+                    <a className={`text-gray-700 hover:text-primary ${location.startsWith('/builder') ? 'text-primary font-medium' : ''}`}>
+                      Create Resume
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/arweave">
+                    <a className={`text-gray-700 hover:text-primary flex items-center ${location === '/arweave' ? 'text-primary font-medium' : ''}`}>
+                      <Database className="h-4 w-4 mr-1" />
+                      Arweave Storage
+                    </a>
+                  </Link>
+                </li>
+              </ul>
+            </nav>
           </div>
           {isResumeEditor && resumeData && (
             <div className="flex items-center">
