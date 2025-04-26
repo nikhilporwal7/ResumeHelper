@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+
+  /* Microsoft Design Colors */
+  --primary: 206 100% 41.2%;  /* Microsoft Blue #0078d4 */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 20 14.3% 4.1%;
+  --accent: 213.1 59.4% 93.9%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 215 20.2% 65.1%;
+  --radius: 0.5rem;
+
+  /* Microsoft chart colors */
+  --chart-1: 206 100% 41.2%;
+  --chart-2: 122 39% 29%;
+  --chart-3: 312 70% 40%;
+  --chart-4: 32 81% 50%;
+  --chart-5: 200 99% 38%;
+
+  /* Microsoft status colors */
+  --status-success: 120 60% 26.7%;
+  --status-error: 0 86% 33.3%;
+  --status-warning: 35 100% 63.1%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 206 100% 41.2%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 215 20.2% 65.1%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-[#F3F2F1] text-foreground;
+  }
+}
+
+/* Microsoft-specific styles */
+.ats-score-ring {
+  stroke-dasharray: 264;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* Form step indicator styles */
+.step-indicator {
+  @apply relative flex items-center;
+}
+
+.step-indicator.active .step-circle {
+  @apply bg-primary text-white;
+}
+
+.step-indicator.active .step-text {
+  @apply text-primary font-semibold;
+}
+
+.step-indicator.active::after {
+  @apply border-primary;
+}
+
+.step-indicator::after {
+  content: '';
+  @apply absolute w-full h-0.5 border-b-2 border-muted -bottom-2 left-0;
+}
+
+.step-indicator:last-child::after {
+  @apply hidden;
+}
+
+/* Microsoft-inspired button styles */
+.ms-button-primary {
+  @apply bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md transition duration-150 ease-in-out;
+}
+
+.ms-button-secondary {
+  @apply bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-md transition duration-150 ease-in-out;
+}
+
+.ms-button-outline {
+  @apply bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 py-2 px-4 rounded-md transition duration-150 ease-in-out;
+}
+
+/* Resume preview styles */
+.resume-preview {
+  @apply border border-gray-300 bg-white shadow-md;
+  aspect-ratio: 1/1.414; /* A4 aspect ratio */
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/30 rounded-full hover:bg-primary/50;
+}
