@@ -11,6 +11,7 @@ import { ThemeProvider } from "next-themes";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import { ResumeProvider } from "@/context/ResumeContext";
+import { ArweaveProvider } from "@/context/ArweaveContext";
 
 function Router() {
   return (
@@ -35,10 +36,12 @@ function App() {
     <ThemeProvider attribute="class">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <ResumeProvider>
-            <Toaster />
-            <Router />
-          </ResumeProvider>
+          <ArweaveProvider>
+            <ResumeProvider>
+              <Toaster />
+              <Router />
+            </ResumeProvider>
+          </ArweaveProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
