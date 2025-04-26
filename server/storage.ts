@@ -57,103 +57,75 @@ export interface IStorage {
   updateSkills(id: number, skills: Partial<InsertSkills>): Promise<Skills | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private resumes: Map<number, Resume>;
-  private personalInfos: Map<number, PersonalInfo>;
-  private summaries: Map<number, Summary>;
-  private experiences: Map<number, Experience>;
-  private educations: Map<number, Education>;
-  private skills: Map<number, Skills>;
-  
-  private userId: number;
-  private resumeId: number;
-  private personalInfoId: number;
-  private summaryId: number;
-  private experienceId: number;
-  private educationId: number;
-  private skillsId: number;
+import { db } from "./db";
+import { 
+  users, resumes, resumePersonalInfo, resumeSummary, 
+  resumeExperience, resumeEducation, resumeSkills 
+} from "@shared/schema";
+import { eq } from "drizzle-orm";
 
-  constructor() {
-    this.users = new Map();
-    this.resumes = new Map();
-    this.personalInfos = new Map();
-    this.summaries = new Map();
-    this.experiences = new Map();
-    this.educations = new Map();
-    this.skills = new Map();
-    
-    this.userId = 1;
-    this.resumeId = 1;
-    this.personalInfoId = 1;
-    this.summaryId = 1;
-    this.experienceId = 1;
-    this.educationId = 1;
-    this.skillsId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   // Resume operations
   async createResume(insertResume: InsertResume, userId?: number): Promise<Resume> {
-    const id = this.resumeId++;
     const now = new Date();
-    const resume: Resume = { 
-      ...insertResume, 
-      id, 
-      userId: userId || null, 
-      createdAt: now, 
-      updatedAt: now 
-    };
-    this.resumes.set(id, resume);
+    const [resume] = await db
+      .insert(resumes)
+      .values({
+        ...insertResume,
+        userId: userId || null,
+        createdAt: now,
+        updatedAt: now
+      })
+      .returning();
     return resume;
   }
 
   async getResumes(userId?: number): Promise<Resume[]> {
     if (userId) {
-      return Array.from(this.resumes.values()).filter(
-        (resume) => resume.userId === userId
-      );
+      return db.select().from(resumes).where(eq(resumes.userId, userId));
     }
-    return Array.from(this.resumes.values());
+    return db.select().from(resumes);
   }
 
   async getResume(id: number): Promise<Resume | undefined> {
-    return this.resumes.get(id);
+    const [resume] = await db.select().from(resumes).where(eq(resumes.id, id));
+    return resume || undefined;
   }
 
   async updateResume(id: number, resume: Partial<InsertResume>): Promise<Resume | undefined> {
-    const existingResume = this.resumes.get(id);
-    if (!existingResume) return undefined;
-    
-    const updatedResume: Resume = {
-      ...existingResume,
-      ...resume,
-      updatedAt: new Date()
-    };
-    
-    this.resumes.set(id, updatedResume);
-    return updatedResume;
+    const [updatedResume] = await db
+      .update(resumes)
+      .set({
+        ...resume,
+        updatedAt: new Date()
+      })
+      .where(eq(resumes.id, id))
+      .returning();
+    return updatedResume || undefined;
   }
 
   async deleteResume(id: number): Promise<boolean> {
-    return this.resumes.delete(id);
+    const result = await db.delete(resumes).where(eq(resumes.id, id));
+    return !!result.count;
   }
 
   // Complete resume data operations
@@ -283,164 +255,178 @@ export class MemStorage implements IStorage {
 
   // Personal Info operations
   async createPersonalInfo(personalInfo: InsertPersonalInfo, resumeId: number): Promise<PersonalInfo> {
-    const id = this.personalInfoId++;
-    const newPersonalInfo: PersonalInfo = { ...personalInfo, id, resumeId };
-    this.personalInfos.set(id, newPersonalInfo);
+    const [newPersonalInfo] = await db
+      .insert(resumePersonalInfo)
+      .values({
+        ...personalInfo,
+        resumeId
+      })
+      .returning();
     return newPersonalInfo;
   }
 
   async getPersonalInfo(resumeId: number): Promise<PersonalInfo | undefined> {
-    return Array.from(this.personalInfos.values()).find(
-      (personalInfo) => personalInfo.resumeId === resumeId
-    );
+    const [personalInfo] = await db
+      .select()
+      .from(resumePersonalInfo)
+      .where(eq(resumePersonalInfo.resumeId, resumeId));
+    return personalInfo || undefined;
   }
 
   async updatePersonalInfo(id: number, personalInfo: Partial<InsertPersonalInfo>): Promise<PersonalInfo | undefined> {
-    const existingPersonalInfo = this.personalInfos.get(id);
-    if (!existingPersonalInfo) return undefined;
-    
-    const updatedPersonalInfo: PersonalInfo = {
-      ...existingPersonalInfo,
-      ...personalInfo
-    };
-    
-    this.personalInfos.set(id, updatedPersonalInfo);
-    return updatedPersonalInfo;
+    const [updatedPersonalInfo] = await db
+      .update(resumePersonalInfo)
+      .set(personalInfo)
+      .where(eq(resumePersonalInfo.id, id))
+      .returning();
+    return updatedPersonalInfo || undefined;
   }
 
   // Summary operations
   async createSummary(summary: InsertSummary, resumeId: number): Promise<Summary> {
-    const id = this.summaryId++;
-    const newSummary: Summary = { ...summary, id, resumeId };
-    this.summaries.set(id, newSummary);
+    const [newSummary] = await db
+      .insert(resumeSummary)
+      .values({
+        ...summary,
+        resumeId
+      })
+      .returning();
     return newSummary;
   }
 
   async getSummary(resumeId: number): Promise<Summary | undefined> {
-    return Array.from(this.summaries.values()).find(
-      (summary) => summary.resumeId === resumeId
-    );
+    const [summary] = await db
+      .select()
+      .from(resumeSummary)
+      .where(eq(resumeSummary.resumeId, resumeId));
+    return summary || undefined;
   }
 
   async updateSummary(id: number, summary: Partial<InsertSummary>): Promise<Summary | undefined> {
-    const existingSummary = this.summaries.get(id);
-    if (!existingSummary) return undefined;
-    
-    const updatedSummary: Summary = {
-      ...existingSummary,
-      ...summary
-    };
-    
-    this.summaries.set(id, updatedSummary);
-    return updatedSummary;
+    const [updatedSummary] = await db
+      .update(resumeSummary)
+      .set(summary)
+      .where(eq(resumeSummary.id, id))
+      .returning();
+    return updatedSummary || undefined;
   }
 
   // Experience operations
   async createExperience(experience: InsertExperience, resumeId: number): Promise<Experience> {
-    const id = this.experienceId++;
-    const newExperience: Experience = { 
-      ...experience, 
-      id, 
-      resumeId, 
-      bulletPoints: experience.bulletPoints || []
-    };
-    this.experiences.set(id, newExperience);
+    const [newExperience] = await db
+      .insert(resumeExperience)
+      .values({
+        ...experience,
+        resumeId,
+        bulletPoints: experience.bulletPoints || []
+      })
+      .returning();
     return newExperience;
   }
 
   async getExperiences(resumeId: number): Promise<Experience[]> {
-    return Array.from(this.experiences.values()).filter(
-      (experience) => experience.resumeId === resumeId
-    );
+    return db
+      .select()
+      .from(resumeExperience)
+      .where(eq(resumeExperience.resumeId, resumeId));
   }
 
   async getExperience(id: number): Promise<Experience | undefined> {
-    return this.experiences.get(id);
+    const [experience] = await db
+      .select()
+      .from(resumeExperience)
+      .where(eq(resumeExperience.id, id));
+    return experience || undefined;
   }
 
   async updateExperience(id: number, experience: Partial<InsertExperience>): Promise<Experience | undefined> {
-    const existingExperience = this.experiences.get(id);
-    if (!existingExperience) return undefined;
-    
-    const updatedExperience: Experience = {
-      ...existingExperience,
-      ...experience
-    };
-    
-    this.experiences.set(id, updatedExperience);
-    return updatedExperience;
+    const [updatedExperience] = await db
+      .update(resumeExperience)
+      .set(experience)
+      .where(eq(resumeExperience.id, id))
+      .returning();
+    return updatedExperience || undefined;
   }
 
   async deleteExperience(id: number): Promise<boolean> {
-    return this.experiences.delete(id);
+    const result = await db
+      .delete(resumeExperience)
+      .where(eq(resumeExperience.id, id));
+    return !!result.count;
   }
 
   // Education operations
   async createEducation(education: InsertEducation, resumeId: number): Promise<Education> {
-    const id = this.educationId++;
-    const newEducation: Education = { ...education, id, resumeId };
-    this.educations.set(id, newEducation);
+    const [newEducation] = await db
+      .insert(resumeEducation)
+      .values({
+        ...education,
+        resumeId
+      })
+      .returning();
     return newEducation;
   }
 
   async getEducations(resumeId: number): Promise<Education[]> {
-    return Array.from(this.educations.values()).filter(
-      (education) => education.resumeId === resumeId
-    );
+    return db
+      .select()
+      .from(resumeEducation)
+      .where(eq(resumeEducation.resumeId, resumeId));
   }
 
   async getEducation(id: number): Promise<Education | undefined> {
-    return this.educations.get(id);
+    const [education] = await db
+      .select()
+      .from(resumeEducation)
+      .where(eq(resumeEducation.id, id));
+    return education || undefined;
   }
 
   async updateEducation(id: number, education: Partial<InsertEducation>): Promise<Education | undefined> {
-    const existingEducation = this.educations.get(id);
-    if (!existingEducation) return undefined;
-    
-    const updatedEducation: Education = {
-      ...existingEducation,
-      ...education
-    };
-    
-    this.educations.set(id, updatedEducation);
-    return updatedEducation;
+    const [updatedEducation] = await db
+      .update(resumeEducation)
+      .set(education)
+      .where(eq(resumeEducation.id, id))
+      .returning();
+    return updatedEducation || undefined;
   }
 
   async deleteEducation(id: number): Promise<boolean> {
-    return this.educations.delete(id);
+    const result = await db
+      .delete(resumeEducation)
+      .where(eq(resumeEducation.id, id));
+    return !!result.count;
   }
 
   // Skills operations
   async createSkills(skills: InsertSkills, resumeId: number): Promise<Skills> {
-    const id = this.skillsId++;
-    const newSkills: Skills = { 
-      ...skills, 
-      id, 
-      resumeId, 
-      skills: skills.skills || []
-    };
-    this.skills.set(id, newSkills);
+    const [newSkills] = await db
+      .insert(resumeSkills)
+      .values({
+        ...skills,
+        resumeId,
+        skills: skills.skills || []
+      })
+      .returning();
     return newSkills;
   }
 
   async getSkills(resumeId: number): Promise<Skills | undefined> {
-    return Array.from(this.skills.values()).find(
-      (skills) => skills.resumeId === resumeId
-    );
+    const [skills] = await db
+      .select()
+      .from(resumeSkills)
+      .where(eq(resumeSkills.resumeId, resumeId));
+    return skills || undefined;
   }
 
   async updateSkills(id: number, skills: Partial<InsertSkills>): Promise<Skills | undefined> {
-    const existingSkills = this.skills.get(id);
-    if (!existingSkills) return undefined;
-    
-    const updatedSkills: Skills = {
-      ...existingSkills,
-      ...skills
-    };
-    
-    this.skills.set(id, updatedSkills);
-    return updatedSkills;
+    const [updatedSkills] = await db
+      .update(resumeSkills)
+      .set(skills)
+      .where(eq(resumeSkills.id, id))
+      .returning();
+    return updatedSkills || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
